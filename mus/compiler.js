@@ -1,32 +1,42 @@
 var noteToMidi = function(note) {
 	var letter = note[0];
 	var num = note[1];
-
-	return 12 + (12 * num) + letterToNum(letter);
-};
-
-var letterToNum = function(letter) {
+	var num2 = -1;
 	switch (letter) {
 		case 'c':
-			return 0;
+			num2 = 0;
+			break;
 		case 'd':
-			return 2;
+			num2 = 2;
+			break;
 		case 'e':
-			return 4;
+			num2 = 4;
+			break;
 		case 'f':
-			return 5;
+			num2 = 5;
+			break;
 		case 'g':
-			return 7;
+			num2 = 7;
+			break;
 		case 'a':
-			return 9;
+			num2 = 9;
+			break;
 		case 'b':
-			return 11;
+			num2 = 11;
+			break;
 	}
+
+	if (num2 === -1)
+		return note;
+
+	return 12 + (12 * num) + num2;
 };
 
 var endTime = function(time, expr) {
 	if (expr.tag === 'note' || expr.tag === 'rest') {
 		return time + expr.dur;
+	} else if (expr.tag === 'repeat') {
+		return time + (expr.count * endTime(0, expr.section));
 	} else if (expr.tag === 'par') {
 		return time + Math.max(
 			endTime(0, expr.left),
@@ -40,9 +50,16 @@ var endTime = function(time, expr) {
 
 var compileT = function(expr, notes, time) {
 	if (expr.tag === 'note') {
-		expr.start = time;
-		expr.pitch = noteToMidi(expr.pitch);
-		notes.push(expr);
+		notes.push({ tag: 'note', pitch: noteToMidi(expr.pitch), start: time, dur: expr.dur });
+	} else if (expr.tag === 'repeat') {
+		var count = expr.count;
+		var sectionTime = endTime(time, expr.section);
+		var timeTaken = 0;
+		while (count > 0) {
+			notes = compileT(expr.section, notes, time + timeTaken);
+			timeTaken += sectionTime;
+			count--;
+		}
 	} else if (expr.tag === 'rest') {
 		// do nothing
 	} else if (expr.tag === 'par') {
@@ -63,10 +80,12 @@ var compile = function(musexpr) {
 
 var melody_mus = 
     { tag: 'seq',
-      left: 
-       { tag: 'seq',
-         left: { tag: 'note', pitch: 'a4', dur: 250 },
-         right: { tag: 'rest', dur: 250 } },
+      left:
+       { tag: 'repeat', section: 
+         { tag: 'seq',
+           left: { tag: 'note', pitch: 'a4', dur: 250 },
+           right: { tag: 'rest', dur: 250 } },
+      count: 3 },
       right:
        { tag: 'seq',
          left: { tag: 'note', pitch: 'c4', dur: 500 },
