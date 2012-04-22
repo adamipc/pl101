@@ -15,3 +15,5 @@ assert.deepEqual( parse("(a (b) c)"), ["a", ["b"], "c"] );
 // Tests for Quotes
 assert.deepEqual( parse("(a '(b) c)"), ["a", ["quote", ["b"]], "c"] );
 
+// Tests for Whitespace
+assert.deepEqual( parse( "(a\n\t(b)\n\tc)"), ["a", ["b"], "c"] );

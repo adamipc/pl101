@@ -9,7 +9,9 @@ atom =
 		{ return chars.join(""); }
 
 whitespace =
-	" "
+	" "+
+      / "\n"+
+      / "\t"+
 
 expression =
 	list
@@ -17,9 +19,9 @@ expression =
       / quote
 
 spacedexpression =
-	whitespace list:list { return list; }
-      / whitespace atom:atom { return atom; }
-      / whitespace quote:quote { return quote; }
+	whitespace+ list:list { return list; }
+      / whitespace+ atom:atom { return atom; }
+      / whitespace+ quote:quote { return quote; }
 
 quote =
 	"'" list:list { return ["quote", list]; }
