@@ -2,7 +2,7 @@ start =
 	expression:expression { return expression; }
 
 validchar =
-	[0-9a-zA-Z_?!+-=@#$%^&*/.]
+	[0-9a-zA-Z_?!+=@#$%^&*/.-]
 
 atom =
 	chars:validchar+
