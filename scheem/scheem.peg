@@ -8,15 +8,18 @@ atom =
 	chars:validchar+
 		{ return chars.join(""); }
 
+whitespace =
+	" "
+
 expression =
 	list
       / atom
       / quote
 
 spacedexpression =
-	" " list:list { return list; }
-      / " " atom:atom { return atom; }
-      / " " quote:quote { return quote; }
+	whitespace list:list { return list; }
+      / whitespace atom:atom { return atom; }
+      / whitespace quote:quote { return quote; }
 
 quote =
 	"'" list:list { return ["quote", list]; }
