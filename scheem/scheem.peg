@@ -11,10 +11,15 @@ atom =
 expression =
 	list
       / atom
+      / quote
 
 spacedexpression =
 	" " list:list { return list; }
       / " " atom:atom { return atom; }
+      / " " quote:quote { return quote; }
+
+quote =
+	"'" list:list { return ["quote", list]; }
 
 list =
 	"(" first:expression rest:spacedexpression* ")"
