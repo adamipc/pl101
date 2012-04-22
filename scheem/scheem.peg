@@ -1,0 +1,21 @@
+start =
+	expression
+
+validchar =
+	[0-9a-zA-Z_?!+-=@#$%^&*/.]
+
+atom =
+	chars:validchar+
+		{ return chars.join(""); }
+
+expression =
+	list
+      / atom
+
+spacedexpression =
+	" " list:list { return list; }
+      / " " atom:atom { return atom; }
+
+list =
+	"(" first:expression rest:spacedexpression* ")"
+		{ rest.unshift(first); return rest; }
