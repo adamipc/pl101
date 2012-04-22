@@ -1,5 +1,5 @@
 start =
-	expression:expression { return expression; }
+	expression:expression whitespace* { return expression; }
 
 validchar =
 	[0-9a-zA-Z_?!+=@#$%^&*/.-]
@@ -9,11 +9,11 @@ atom =
 		{ return chars.join(""); }
 
 comment =
-	";;" [^\n]* "\n"
+	";;" [^\n]* 
 
 whitespace =
 	" "+
-      / "\n"+
+      / "\n"+ 
       / "\t"+
       / comment+
 

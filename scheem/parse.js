@@ -19,4 +19,4 @@ assert.deepEqual( parse("(a '(b) c)"), ["a", ["quote", ["b"]], "c"] );
 assert.deepEqual( parse( "(a\n\t(b)\n\tc)"), ["a", ["b"], "c"] );
 
 // Tests for comments
-assert.deepEqual( parse( ";; foo\n(a\n;; bar\n\t(b)\n\tc)"), ["a", ["b"], "c"] );
+assert.deepEqual( parse( ";; foo\n(a\n;; bar\n\t(b) ;; baz\n\tc) ;; flub"), ["a", ["b"], "c"] );
