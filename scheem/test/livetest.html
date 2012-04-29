@@ -5,6 +5,9 @@
   <script src=
     "http://nathansuniversity.com/js/jquery-1.7.1.min.js">
   </script>
+  <script src="CodeMirror-2.24/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="CodeMirror-2.24/lib/codemirror.css">
+  <script src="CodeMirror-2.24/mode/scheme/scheme.js"></script>
   <script src="../parse.js"></script>
   <script src="../scheem.js"></script>
 </head>
@@ -26,8 +29,22 @@
   };
   // After page load
   $(function() {
+    var cmOptions = {
+        indentUnit: 4,
+        smartIndent: true,
+        tabSize: 4,
+        indentWithTabs: false,
+        lineNumbers: true,
+        matchBrackets: true,
+        autofocus: true,
+        extraKeys: {
+            "Tab": "indentAuto",
+            "Ctrl-Enter": function() { $('#submitbutton').click(); },
+        }
+    };
+    var myCodeMirror = CodeMirror.fromTextArea(input, cmOptions);
     $('#submitbutton').click(function() {
-        var user_text = $('#input').val();
+        var user_text = myCodeMirror.getValue();
         $('#console').html(''); // clear console
         log_console('Your input was: "' + user_text + '"');
         try {
