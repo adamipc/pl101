@@ -5,16 +5,47 @@
   <script src=
     "http://nathansuniversity.com/js/jquery-1.7.1.min.js">
   </script>
+  <script src="jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js"></script>
   <script src="CodeMirror-2.24/lib/codemirror.js"></script>
   <link rel="stylesheet" href="CodeMirror-2.24/lib/codemirror.css">
+  <link rel="stylesheet" href="jquery-ui-1.8.19.custom/css/smoothness/jquery-ui-1.8.19.custom.css">
   <script src="CodeMirror-2.24/mode/scheme/scheme.js"></script>
   <script src="../parse.js"></script>
   <script src="../scheem.js"></script>
 </head>
 <body>
-
-<textarea id="input" style="width:800px; height:300px;">
+<p>Here is my Scheem interpeter. It supports:
+<pre>(begin x y z) ; evaluates all parameters and returns the value of the last
+(define x y) ; defines x to be the value of y, x must not already be defined
+(set! x y) ; changes the definition of x to be y, x must already be defined
+(if x y z) ; if x evaluates to '#t' then evaluates y, else evaluates z
+(+ (* 2 4) (- (/ 9 3) 5)) ; basic arithmatic
+(+ 2 3 4) ; +, -, *, and / support variable length parameters, even only 1 parameter is allowed
+(&lt; x y) ; '#t' if x is less than y, '#f' otherwise. Also &gt; and =
+;; Scheem only evaluates one expression so you need to use begin to combine multiple expressions like the following:
+(begin
+    (define x 5)
+    (define x-squared (* x x))
+    (if (= x-squared 25)
+        (set! x 6)
+        (set! x 7))
+    (set! x-squared (* x x))
+    x-squared) ; should return 36!
+</pre>
+<style type="text/css">
+.CodeMirror,.CodeMirror-scroll {
+    height: 200px;
+}
+.CodeMirror {
+    border: solid 1px;
+    width: 600px;
+}
+</style>
+<div id="container" style="width: 600px">
+<h3 class="ui-widget-header">Write some code!</h3>
+<textarea id="input">
 (+ 1 2)</textarea>
+</div>
 
 <input id="submitbutton" type="button" value="Run" />
 
@@ -61,6 +92,9 @@
         catch(e) {
             log_console('Parse Error: ' + e);
         }
+    });
+    $(".CodeMirror").resizable({
+      stop: function() { myCodeMirror.refresh(); }
     });
   });
 </script>
