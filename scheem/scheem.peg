@@ -1,0 +1,41 @@
+start =
+    expression:expression whitespace* { return expression; }
+
+validchar =
+    [0-9a-zA-Z_?!+=@#$%^&*/.-]
+
+number =
+    digits:[0-9]+
+        { return parseInt(digits.join("")); }
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
+
+comment =
+    ";;" [^\n]* 
+
+whitespace =
+    " "+
+      / "\n"+ 
+      / "\t"+
+      / comment+
+
+expression =
+    list
+      / number
+      / atom
+      / quote
+
+spacedexpression =
+    whitespace+ list:list { return list; }
+      / whitespace+ number:number { return number; }
+      / whitespace+ atom:atom { return atom; }
+      / whitespace+ quote:quote { return quote; }
+
+quote =
+    "'" list:list { return ["quote", list]; }
+
+list =
+    whitespace* "(" whitespace* first:expression rest:spacedexpression* whitespace* ")"
+        { rest.unshift(first); return rest; }

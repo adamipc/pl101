@@ -1,0 +1,44 @@
+start =
+	sequence
+
+whitespace =
+      " "+
+    / "\t"+
+    / "\n"+
+
+sequence =
+	left:repeat right:sequence
+		{ return { tag: 'seq', left:left, right:right }; }	
+      / repeat
+
+count =
+	count:[0-9]+ whitespace+
+		{ return parseInt(count.join(""), 10); }
+
+repeat =
+	"repeat:" count:count section:sequence "end" whitespace+
+		{ return { tag: 'repeat', section:section, count:count }; } 
+      / harmony
+
+harmony =
+	"harmony" whitespace+ left:note right:harmony "end" whitespace+
+		{ return { tag: 'par', left:left, right:right }; }
+      / note
+
+pitch =
+	pitch1:[a-g] pitch2:[0-9]
+		{ return pitch1+pitch2; }
+
+duration =
+	"[" duration:[0-9]+ "]" whitespace+
+		{ return parseInt(duration.join(""), 10); }
+
+note =
+	pitch:pitch duration:duration
+		{ return { tag: "note", pitch: pitch, dur:duration }; } 
+      / delay
+
+delay =
+	"rest" duration:duration
+		{ return { tag: "rest", dur:duration }; } 
+
