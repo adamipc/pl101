@@ -13,7 +13,7 @@ atom =
         { return chars.join(""); }
 
 comment =
-    ";;" [^\n]* 
+    ";" [^\n]* 
 
 whitespace =
     " "+

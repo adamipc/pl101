@@ -320,7 +320,7 @@ suite('parse', function() {
     });
     test('comments', function() {
         assert.deepEqual(
-            parseScheem(";; foo\n(a\n;; bar\n\t(b) ;; baz\n\tc) ;; flub"),
+            parseScheem("; foo\n(a\n; bar\n\t(b) ; baz\n\tc) ; flub"),
             ["a", ["b"], "c"]
         );
     });
