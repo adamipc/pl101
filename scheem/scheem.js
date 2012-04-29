@@ -1,3 +1,16 @@
+if (typeof module !== 'undefined') {
+    var PEG = require('pegjs');
+    var fs = require('fs');
+    var parseScheem = PEG.buildParser(fs.readFileSync(
+        'scheem.peg', 'utf-8')).parse;
+} else {
+    var parseScheem = SCHEEM.parse;
+};
+
+evalScheemString = function(string, env) {
+    return evalScheem(parseScheem(string), env);
+};
+
 evalScheem = function (expr, env) {
     // Numbers evaluate to themselves
     if (typeof expr === 'number') {
@@ -72,4 +85,5 @@ evalScheem = function (expr, env) {
 // If we are used as Node module, export evalScheem
 if (typeof module !== 'undefined') {
     module.exports.evalScheem = evalScheem;
+    module.exports.evalScheemString = evalScheemString;
 }

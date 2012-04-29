@@ -1,9 +1,15 @@
 if (typeof module !== 'undefined') {
     // In Node load required modules
     var assert = require('chai').assert;
+    var PEG = require('pegjs');
+    var fs = require('fs');
     var evalScheem = require('../scheem').evalScheem;
+    var evalScheemString = require('../scheem').evalScheemString;
+    var parseScheem = PEG.buildParser(fs.readFileSync(
+        'scheem.peg', 'utf-8')).parse;
 } else {
     // In browser assume already loaded by <script> tags
+    var parseScheem = SCHEEM.parse;
     var assert = chai.assert;
 }
 
@@ -182,6 +188,59 @@ suite('equality', function() {
         assert.deepEqual(
             evalScheem(['>', 12, 3], {}),
             '#t' 
+        );
+    });
+});
+
+suite('parse', function() {
+    test('atoms', function() {
+        assert.deepEqual(
+            parseScheem("(a b c)"),
+            ["a", "b", "c"]
+        );
+    });
+    test('nested atoms', function() {
+        assert.deepEqual(
+            parseScheem("(a (b) c)"),
+            ["a", ["b"], "c"]
+        );
+    });
+    test('numbers', function() {
+        assert.deepEqual(
+            parseScheem("(1 (2) 32)"),
+            [1, [2], 32]
+        );
+    });
+    test('quotes', function() {
+        assert.deepEqual(
+            parseScheem("(a '(b) c)"),
+            ["a", ["quote", ["b"]], "c"]
+        );
+    });
+    test('whitespace', function() {
+        assert.deepEqual(
+            parseScheem("(a\n\t(b)\n\t c)"),
+            ["a", ["b"], "c"]
+        );
+    });
+    test('comments', function() {
+        assert.deepEqual(
+            parseScheem(";; foo\n(a\n;; bar\n\t(b) ;; baz\n\tc) ;; flub"),
+            ["a", ["b"], "c"]
+        );
+    });
+});
+suite('eval string', function() {
+    test('add', function() {
+        assert.deepEqual(
+            evalScheemString("(+ 1 2)", {}),
+            3
+        );
+    });
+    test('begin', function() {
+        assert.deepEqual(
+            evalScheemString("(begin (define x 5) (+ x 2))", {}),
+            7
         );
     });
 });
