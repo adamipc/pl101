@@ -1,5 +1,5 @@
 var PEG = require('pegjs');
-var assert = require('assert');
+var assert = require('chai').assert;
 var fs = require('fs'); // for loading files
 
 // Read file contents
@@ -11,6 +11,7 @@ var parse = PEG.buildParser(data).parse;
 // Do a test
 assert.deepEqual( parse("(a b c)"), ["a", "b", "c"] );
 assert.deepEqual( parse("(a (b) c)"), ["a", ["b"], "c"] );
+assert.deepEqual( parse("(1 (2) 32)"), [1, [2], 32] );
 
 // Tests for Quotes
 assert.deepEqual( parse("(a '(b) c)"), ["a", ["quote", ["b"]], "c"] );
