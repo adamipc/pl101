@@ -23,20 +23,29 @@ evalScheem = function (expr, env) {
     // Look at head of list for operation
     switch (expr[0]) {
         case '+':
-            return evalScheem(expr[1], env) +
-                   evalScheem(expr[2], env);
+            var result = evalScheem(expr[1], env);
+            for (var i = 2; i < expr.length; i++) {
+                result += evalScheem(expr[i], env);
+            }
+            return result;
         case '-':
-            return evalScheem(expr[1], env) -
-                   evalScheem(expr[2], env);
-            return;
+            var result = evalScheem(expr[1], env);
+            for (var i = 2; i < expr.length; i++) {
+                result -= evalScheem(expr[i], env);
+            }
+            return result;
         case '*':
-            return evalScheem(expr[1], env) *
-                   evalScheem(expr[2], env);
-            return;
+            var result = evalScheem(expr[1], env);
+            for (var i = 2; i < expr.length; i++) {
+                result *= evalScheem(expr[i], env);
+            }
+            return result;
         case '/':
-            return evalScheem(expr[1], env) /
-                   evalScheem(expr[2], env);
-            return;
+            var result = evalScheem(expr[1], env);
+            for (var i = 2; i < expr.length; i++) {
+                result /= evalScheem(expr[i], env);
+            }
+            return result;
         case '=':
             var eq = (evalScheem(expr[1], env) === 
                       evalScheem(expr[2], env));
@@ -53,6 +62,9 @@ evalScheem = function (expr, env) {
             if (greaterthan) return '#t';
             return '#f';
         case 'quote':
+            if (expr.length > 2) {
+                throw "Too many parameters to quote";
+            }
             return expr[1];
         case 'begin':
             var result = 0;
@@ -61,7 +73,21 @@ evalScheem = function (expr, env) {
             }
             return result;
         case 'define':
+            if (typeof env[expr[1]] != 'undefined') {
+                throw "Variable already defined";
+            }
+            if (expr.length > 3) {
+                throw "Too many parameters to define";
+            }
+            env[expr[1]] = evalScheem(expr[2], env); 
+            return 0;
         case 'set!':
+            if (typeof env[expr[1]] === 'undefined') {
+                throw "Variable not yet defined";
+            }
+            if (expr.length > 3) {
+                throw "Too many parameters to set!";
+            }
             env[expr[1]] = evalScheem(expr[2], env); 
             return 0;
         case 'if':
@@ -74,8 +100,18 @@ evalScheem = function (expr, env) {
             tail.unshift(evalScheem(expr[1], env)); 
             return tail;
         case 'car':
-            return evalScheem(expr[1], env)[0];
+            if (expr.length > 2) {
+                throw "Too many parameters to car";
+            }
+            var list = evalScheem(expr[1], env);
+            if (list instanceof Array) {
+                return evalScheem(expr[1], env)[0];
+            }
+            throw "Parameter to car is not a list";
         case 'cdr':
+            if (expr.length > 2) {
+                throw "Too many parameters to car";
+            }
             var list = evalScheem(expr[1], env);
             list.shift();
             return list;

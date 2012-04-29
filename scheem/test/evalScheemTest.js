@@ -1,6 +1,7 @@
 if (typeof module !== 'undefined') {
     // In Node load required modules
     var assert = require('chai').assert;
+    var expect = require('chai').expect;
     var PEG = require('pegjs');
     var fs = require('fs');
     var evalScheem = require('../scheem').evalScheem;
@@ -11,6 +12,7 @@ if (typeof module !== 'undefined') {
     // In browser assume already loaded by <script> tags
     var parseScheem = SCHEEM.parse;
     var assert = chai.assert;
+    var expect = chai.expect;
 }
 
 suite('quote', function() {
@@ -31,6 +33,11 @@ suite('quote', function() {
             evalScheem(['quote', [1, 2, 3]], {}),
             [1, 2, 3]
         );
+    });
+    test('too many parameters', function() {
+        expect(function () {
+            evalScheem(['quote', [1], 2], {});
+        }).to.throw();
     });
 });
 suite('cons', function() {
@@ -60,6 +67,16 @@ suite('car', function() {
             1
         );
     });
+    test('too many parameters', function() {
+        expect(function () {
+            evalScheem(['car', ['quote', [1, 2]], 3], {});
+        }).to.throw();
+    });
+    test('non list', function() {
+        expect(function () {
+            evalScheem(['car', 1], {});
+        }).to.throw();
+    });
 });
 suite('cdr', function() {
     test('a list', function() {
@@ -74,6 +91,16 @@ suite('cdr', function() {
             []
         );
     });
+    test('too many parameters', function() {
+        expect(function () {
+            evalScheem(['cdr', ['quote', [1, 2]], 3], {});
+        }).to.throw();
+    });
+    test('non list', function() {
+        expect(function () {
+            evalScheem(['cdr', 3], {});
+        }).to.throw();
+    });
 });
 suite('environment', function() {
     test('define', function() {
@@ -84,12 +111,32 @@ suite('environment', function() {
             {x: 3, y: 1}
         );
     });
+    test('define already defined', function() {
+        expect(function () {
+            evalScheem(['define', 'x', 3], {x: 5});
+        }).to.throw();
+    });
+    test('define too many parameters', function() {
+        expect(function () {
+            evalScheem(['define', 'x', 3, 4], {});
+        }).to.throw();
+    });
     test('set!', function() {
         var env = {x: 4, y: 1};
         evalScheem(['set!', 'x', 3], env);
         assert.deepEqual(env,
             {x: 3, y: 1}
         );
+    });
+    test('set! too many parameters', function() {
+        expect(function () {
+            evalScheem(['set!', 'x', 3, 4], {});
+        }).to.throw();
+    });
+    test('set! not yet defined', function() {
+        expect(function () {
+            evalScheem(['set!', 'x', 3], {});
+        }).to.throw();
     });
     test('set! expression', function() {
         var env = {x: 4, y: 1};
@@ -134,10 +181,34 @@ suite('math', function() {
             3
         );
     });
+    test('add single', function() {
+        assert.deepEqual(
+            evalScheem(['+', 1], {}),
+            1
+        );
+    });
+    test('add multiple', function() {
+        assert.deepEqual(
+            evalScheem(['+', 1, 2, 3], {}),
+            6
+        );
+    });
     test('subtract', function() {
         assert.deepEqual(
             evalScheem(['-', 1, 2], {}),
             -1 
+        );
+    });
+    test('subtract single', function() {
+        assert.deepEqual(
+            evalScheem(['-', 1], {}),
+            1
+        );
+    });
+    test('subtract multiple', function() {
+        assert.deepEqual(
+            evalScheem(['-', 12, 2, 3], {}),
+            7
         );
     });
     test('multiply', function() {
@@ -146,10 +217,34 @@ suite('math', function() {
             6 
         );
     });
+    test('multiply single', function() {
+        assert.deepEqual(
+            evalScheem(['*', 3], {}),
+            3
+        );
+    });
+    test('multiply multiple', function() {
+        assert.deepEqual(
+            evalScheem(['*', 2, 3, 4], {}),
+            24
+        );
+    });
     test('divide', function() {
         assert.deepEqual(
             evalScheem(['/', 12, 3], {}),
             4 
+        );
+    });
+    test('divide single', function() {
+        assert.deepEqual(
+            evalScheem(['/', 3], {}),
+            3
+        );
+    });
+    test('divide multiple', function() {
+        assert.deepEqual(
+            evalScheem(['/', 24, 3, 4], {}),
+            2
         );
     });
 });
