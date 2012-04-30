@@ -14,14 +14,32 @@
   <script src="../scheem.js"></script>
 </head>
 <body>
-<p>Here is my Scheem interpeter. It supports:
-<pre>(begin x y z) ; evaluates all parameters and returns the value of the last
+<style type="text/css">
+.CodeMirror,.CodeMirror-scroll {
+    height: 200px;
+}
+.CodeMirror {
+    border: solid 1px;
+}
+.foo {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+<p class="foo">Here is my Scheem interpeter. It supports:
+<pre class="foo">(begin x y z) ; evaluates all parameters and returns the value of the last
 (define x y) ; defines x to be the value of y, x must not already be defined
 (set! x y) ; changes the definition of x to be y, x must already be defined
 (if x y z) ; if x evaluates to '#t' then evaluates y, else evaluates z
 (+ (* 2 4) (- (/ 9 3) 5)) ; basic arithmatic
 (+ 2 3 4) ; +, -, *, and / support variable length parameters, even only 1 parameter is allowed
 (&lt; x y) ; '#t' if x is less than y, '#f' otherwise. Also &gt; and =
+</pre>
+</p>
+<div id="container" class="foo">
+<h3 class="ui-widget-header">Write some code!</h3>
+<textarea id="input" style="text-align: center;">
 ;; Scheem only evaluates one expression so you need to use begin to combine multiple expressions like the following:
 (begin
     (define x 5)
@@ -31,25 +49,14 @@
         (set! x 7))
     (set! x-squared (* x x))
     x-squared) ; should return 36!
-</pre>
-<style type="text/css">
-.CodeMirror,.CodeMirror-scroll {
-    height: 200px;
-}
-.CodeMirror {
-    border: solid 1px;
-    width: 600px;
-}
-</style>
-<div id="container" style="width: 600px">
-<h3 class="ui-widget-header">Write some code!</h3>
-<textarea id="input">
-(+ 1 2)</textarea>
+</textarea>
 </div>
 
+<div class="foo">
 <input id="submitbutton" type="button" value="Run" />
+</div>
 
-<div id="console" class="console" style="border:solid 1px;">
+<div id="console" class="console foo" style="border:solid 1px;">
 <p>This is where output goes.</p>
 </div>
 
@@ -94,7 +101,12 @@
         }
     });
     $(".CodeMirror").resizable({
-      stop: function() { myCodeMirror.refresh(); }
+      stop: function() { myCodeMirror.refresh(); },
+      resize: function() {
+        $(".CodeMirror-scroll").height($(this).height());
+        $(".CodeMirror-scroll").width($(this).width());
+        myCodeMirror.refresh();
+      }
     });
   });
 </script>
