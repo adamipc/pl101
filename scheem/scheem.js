@@ -50,7 +50,9 @@ var initialEnvironment = {
 '-': function(args) { return args.slice(1).reduce(function(x, y) { return x - y; }, args[0]); },
 '*': function(args) { return args.reduce(function(x, y) { return x * y; }, 1); },
 '/': function(args) { return args.slice(1).reduce(function(x, y) { return x / y; }, args[0]); },
-'=': function(args) { if (args[0] === args[1]) { return '#t' }; return '#f'; }
+'=': function(args) { if (args[0] === args[1]) { return '#t' }; return '#f'; },
+'<': function(args) { if (args[0] < args[1]) { return '#t' }; return '#f'; },
+'>': function(args) { if (args[0] > args[1]) { return '#t' }; return '#f'; }
 };
 
 
@@ -65,16 +67,6 @@ var evalScheem = function (expr, env) {
 
     // Look at head of list for operation
     switch (expr[0]) {
-        case '<':
-            var lessthan = (evalScheem(expr[1], env) <
-                            evalScheem(expr[2], env));
-            if (lessthan) return '#t';
-            return '#f';
-        case '>':
-            var greaterthan = (evalScheem(expr[1], env) >
-                               evalScheem(expr[2], env));
-            if (greaterthan) return '#t';
-            return '#f';
         case 'quote':
             if (expr.length > 2) {
                 throw "Too many parameters to quote";
