@@ -55,6 +55,14 @@ suite('function application', function() {
             3
         );
     });
+    test('no args', function() {
+        var five = function () { return 5; }
+        var env = {name: 'five', value: five};
+        assert.deepEqual(
+            evalScheem(['five'], env),
+            5
+        );
+    });
     test('multiple argument', function() {
         var plus = function (args) { return args[0] + args[1]; };
         var env = {name: 'plus', value: plus};
