@@ -104,16 +104,16 @@ suite('cdr', function() {
 });
 suite('environment', function() {
     test('define', function() {
-        var env = {y: 1};
+        var env = {name: 'y', value: 1};
         evalScheem(['define', 'x', 3], env);
         assert.deepEqual(
             env,
-            {x: 3, y: 1}
+            {name: 'x', value: 3, outer: { name: 'y', value: 1, outer: undefined}}
         );
     });
     test('define already defined', function() {
         expect(function () {
-            evalScheem(['define', 'x', 3], {x: 5});
+            evalScheem(['define', 'x', 3], {name: 'x', value: 5});
         }).to.throw();
     });
     test('define too many parameters', function() {
@@ -122,10 +122,10 @@ suite('environment', function() {
         }).to.throw();
     });
     test('set!', function() {
-        var env = {x: 4, y: 1};
+        var env = {name: 'x', value: 4};
         evalScheem(['set!', 'x', 3], env);
         assert.deepEqual(env,
-            {x: 3, y: 1}
+            {name: 'x', value: 3}
         );
     });
     test('set! too many parameters', function() {
@@ -139,10 +139,10 @@ suite('environment', function() {
         }).to.throw();
     });
     test('set! expression', function() {
-        var env = {x: 4, y: 1};
+        var env = {name: 'x', value: 4};
         evalScheem(['set!', 'x', ['+', 1, 2]], env);
         assert.deepEqual(env,
-            {x: 3, y: 1}
+            {name: 'x', value: 3}
         );
     });
 });
@@ -160,15 +160,15 @@ suite('begin', function() {
         );
     });
     test('change environment', function() {
-        var env = {x: 4};
+        var env = {name: 'x', value: 4};
         evalScheem(['begin', ['set!', 'x', 3]], env);
         assert.deepEqual(
             env,
-            {x: 3}
+            {name: 'x', value: 3}
         );
     });
     test('track environment', function() {
-        var env = {x: 4};
+        var env = {name: 'x', value: 4};
         assert.deepEqual(evalScheem(['begin', ['set!', 'x', 3], ['+', 'x', 2]], env),
             5
         );

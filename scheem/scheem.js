@@ -7,17 +7,45 @@ if (typeof module !== 'undefined') {
     var parseScheem = SCHEEM.parse;
 };
 
-evalScheemString = function(string, env) {
+var evalScheemString = function(string, env) {
     return evalScheem(parseScheem(string), env);
 };
 
-evalScheem = function (expr, env) {
+var lookup = function (env, v) {
+    if (env.name === v) {
+        return env.value;
+    }
+
+    if (typeof env.outer !== 'undefined') {
+        return lookup(env.outer, v);
+    }
+};
+
+var update = function (env, v, val) {
+    if (env.name === v) {
+        env.value = val;
+    } else {
+        if (typeof env.outer !== 'undefined') {
+            update(env.outer, v, val);
+        } else {
+            throw "Variable " + v + " is not defined.";
+        }
+    }
+};
+
+var add_binding = function (env, v, val) {
+    env.outer = { name: env.name, value: env.value, outer: env.outer };
+    env.name = v;
+    env.value = val;
+};
+
+var evalScheem = function (expr, env) {
     // Numbers evaluate to themselves
     if (typeof expr === 'number') {
         return expr;
     }
     if (typeof expr === 'string') {
-        return env[expr];
+        return lookup(env, expr);
     }
 
     // Look at head of list for operation
@@ -73,22 +101,22 @@ evalScheem = function (expr, env) {
             }
             return result;
         case 'define':
-            if (typeof env[expr[1]] != 'undefined') {
+            if (typeof lookup(env, expr[1]) !== 'undefined') {
                 throw "Variable already defined";
             }
             if (expr.length > 3) {
                 throw "Too many parameters to define";
             }
-            env[expr[1]] = evalScheem(expr[2], env); 
+            add_binding(env, expr[1], evalScheem(expr[2], env));
             return 0;
         case 'set!':
-            if (typeof env[expr[1]] === 'undefined') {
+            if (typeof lookup(env, expr[1]) === 'undefined') {
                 throw "Variable not yet defined";
             }
             if (expr.length > 3) {
                 throw "Too many parameters to set!";
             }
-            env[expr[1]] = evalScheem(expr[2], env); 
+            update(env, expr[1], evalScheem(expr[2], env)); 
             return 0;
         case 'if':
             if (evalScheem(expr[1], env) === '#t') {
