@@ -52,9 +52,25 @@ var initialEnvironment = {
 '/': function(args) { return args.slice(1).reduce(function(x, y) { return x / y; }, args[0]); },
 '=': function(args) { if (args[0] === args[1]) { return '#t' }; return '#f'; },
 '<': function(args) { if (args[0] < args[1]) { return '#t' }; return '#f'; },
-'>': function(args) { if (args[0] > args[1]) { return '#t' }; return '#f'; }
+'>': function(args) { if (args[0] > args[1]) { return '#t' }; return '#f'; },
+'cons': function(args) { args[1].unshift(args[0]); return args[1]; },
+'car': function(args) {
+    if (args.length > 1) {
+        throw "Too many parameters to car";
+    }
+    if (args[0] instanceof Array) {
+        return args[0][0];
+    }
+    throw "Parameter to car is not a list";
+},
+'cdr': function(args) {
+    if (args.length > 1) {
+        throw "Too many parameters to cdr";
+    }
+    args[0].shift();
+    return args[0];
+}
 };
-
 
 var evalScheem = function (expr, env) {
     // Numbers evaluate to themselves
@@ -115,26 +131,6 @@ var evalScheem = function (expr, env) {
                 return evalScheem(expr[2], env);
             }
             return evalScheem(expr[3], env);
-        case 'cons':
-            var tail = evalScheem(expr[2], env);
-            tail.unshift(evalScheem(expr[1], env)); 
-            return tail;
-        case 'car':
-            if (expr.length > 2) {
-                throw "Too many parameters to car";
-            }
-            var list = evalScheem(expr[1], env);
-            if (list instanceof Array) {
-                return evalScheem(expr[1], env)[0];
-            }
-            throw "Parameter to car is not a list";
-        case 'cdr':
-            if (expr.length > 2) {
-                throw "Too many parameters to car";
-            }
-            var list = evalScheem(expr[1], env);
-            list.shift();
-            return list;
         default:
             var evaluatedArgs = expr.slice(1).map(function(expr) {
                 return evalScheem(expr, env);
