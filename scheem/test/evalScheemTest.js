@@ -22,6 +22,12 @@ suite('lambda-one', function() {
             5
         );
     });
+    test('anonymous plus one', function() {
+        assert.deepEqual(
+            evalScheem([['lambda-one', 'x', ['+', 1, 'x']], 5], {}),
+            6
+        );
+    });
 });
 
 suite('let-one', function() {
