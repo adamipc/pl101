@@ -120,6 +120,10 @@ var evalScheem = function (expr, env) {
             return 0;
         case 'let-one':
             return evalScheem(expr[3], { name: expr[1], value: evalScheem(expr[2]), outer: env});
+        case 'lambda-one':
+            return function (arg) {
+                return evalScheem(expr[2], { name: expr[1], value: arg, outer: env});
+            };
         case 'if':
             if (evalScheem(expr[1], env) === '#t') {
                 return evalScheem(expr[2], env);

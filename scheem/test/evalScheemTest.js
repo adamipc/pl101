@@ -15,6 +15,21 @@ if (typeof module !== 'undefined') {
     var expect = chai.expect;
 }
 
+suite('lambda-one', function() {
+    test('anonymous identity', function() {
+        assert.deepEqual(
+            evalScheem([['lambda-one', 'x', 'x'], 5], {}),
+            5
+        );
+    });
+    test('anonymous plus one', function() {
+        assert.deepEqual(
+            evalScheem([['lambda-one', 'x', ['+', 1, 'x']], 5], {}),
+            6
+        );
+    });
+});
+
 suite('let-one', function() {
     test('basic', function() {
         assert.deepEqual(
