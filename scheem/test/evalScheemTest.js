@@ -55,6 +55,14 @@ suite('function application', function() {
             3
         );
     });
+    test('multiple argument', function() {
+        var plus = function (x, y) { return x + y; };
+        var env = {name: 'plus', value: plus};
+        assert.deepEqual(
+            evalScheem(['plus', 2, 3], env),
+            5
+        );
+    });
     test('undefined', function() {
         expect(function () {
             evalScheem(['notdefined', 2], env)
