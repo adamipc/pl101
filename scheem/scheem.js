@@ -69,6 +69,13 @@ var initialEnvironment = {
     }
     args[0].shift();
     return args[0];
+},
+'alert': function(args) {
+    if (typeof module !== 'undefined') {
+        console.log(args);
+    } else {
+        alert(args);
+    }
 }
 };
 

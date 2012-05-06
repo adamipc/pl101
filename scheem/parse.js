@@ -529,7 +529,7 @@ SCHEEM = (function(){
           }
         }
         if (result0 !== null) {
-          result1 = parse_list();
+          result1 = parse_expression();
           if (result1 !== null) {
             result0 = [result0, result1];
           } else {
@@ -541,7 +541,7 @@ SCHEEM = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, list) { return ["quote", list]; })(pos0, result0[1]);
+          result0 = (function(offset, expression) { return ["quote", expression]; })(pos0, result0[1]);
         }
         if (result0 === null) {
           pos = pos0;

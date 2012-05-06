@@ -414,10 +414,16 @@ suite('parse', function() {
             [1, [2], 32]
         );
     });
-    test('quotes', function() {
+    test('quoted list', function() {
         assert.deepEqual(
-            parseScheem("(a '(b) c)"),
-            ["a", ["quote", ["b"]], "c"]
+            parseScheem("(a '(b d) c)"),
+            ["a", ["quote", ["b", "d"]], "c"]
+        );
+    });
+    test('quoted atom', function() {
+        assert.deepEqual(
+            parseScheem("(a 'b c)"),
+            ["a", ["quote", "b"], "c"]
         );
     });
     test('whitespace', function() {

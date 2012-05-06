@@ -34,7 +34,7 @@ spacedexpression =
       / whitespace+ quote:quote { return quote; }
 
 quote =
-    "'" list:list { return ["quote", list]; }
+    "'" expression:expression { return ["quote", expression]; }
 
 list =
     whitespace* "(" whitespace* first:expression rest:spacedexpression* whitespace* ")"
