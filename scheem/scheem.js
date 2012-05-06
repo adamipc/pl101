@@ -47,7 +47,9 @@ var add_binding = function (env, v, val) {
 
 var initialEnvironment = {
 '+': function(args) { return args.reduce(function(x, y) { return x + y; }, 0); },
-'-': function(args) { return args.slice(1).reduce(function(x, y) { return x - y; }, args[0]); }
+'-': function(args) { return args.slice(1).reduce(function(x, y) { return x - y; }, args[0]); },
+'*': function(args) { return args.reduce(function(x, y) { return x * y; }, 1); },
+'/': function(args) { return args.slice(1).reduce(function(x, y) { return x / y; }, args[0]); }
 };
 
 
@@ -62,18 +64,6 @@ var evalScheem = function (expr, env) {
 
     // Look at head of list for operation
     switch (expr[0]) {
-        case '*':
-            var result = evalScheem(expr[1], env);
-            for (var i = 2; i < expr.length; i++) {
-                result *= evalScheem(expr[i], env);
-            }
-            return result;
-        case '/':
-            var result = evalScheem(expr[1], env);
-            for (var i = 2; i < expr.length; i++) {
-                result /= evalScheem(expr[i], env);
-            }
-            return result;
         case '=':
             var eq = (evalScheem(expr[1], env) === 
                       evalScheem(expr[2], env));
