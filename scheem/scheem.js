@@ -143,6 +143,8 @@ var evalScheem = function (expr, env) {
             var list = evalScheem(expr[1], env);
             list.shift();
             return list;
+        default:
+            return (evalScheem(expr[0], env))(evalScheem(expr[1]));
     }
 };
 
