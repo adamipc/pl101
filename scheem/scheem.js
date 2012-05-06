@@ -118,6 +118,8 @@ var evalScheem = function (expr, env) {
             }
             update(env, expr[1], evalScheem(expr[2], env)); 
             return 0;
+        case 'let-one':
+            return evalScheem(expr[3], { name: expr[1], value: evalScheem(expr[2]), outer: env});
         case 'if':
             if (evalScheem(expr[1], env) === '#t') {
                 return evalScheem(expr[2], env);

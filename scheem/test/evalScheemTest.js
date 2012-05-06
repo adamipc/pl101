@@ -15,6 +15,22 @@ if (typeof module !== 'undefined') {
     var expect = chai.expect;
 }
 
+suite('let-one', function() {
+    test('basic', function() {
+        assert.deepEqual(
+            evalScheem(['let-one', 'x', 2, 'x'], {}),
+            2
+        );
+    });
+    test('redefine', function() {
+        var env = {name: 'x', value: 1};
+        assert.deepEqual(
+            evalScheem(['let-one', 'x', 2, 'x'], env),
+            2
+        );
+    });
+});
+
 suite('function application', function() {
     test('basic', function() {
         var plusone = function (x) { return x + 1; };
