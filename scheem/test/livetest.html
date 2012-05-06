@@ -35,6 +35,8 @@
 (+ (* 2 4) (- (/ 9 3) 5)) ; basic arithmatic
 (+ 2 3 4) ; +, -, *, and / support variable length parameters, even only 1 parameter is allowed
 (&lt; x y) ; '#t' if x is less than y, '#f' otherwise. Also &gt; and =
+(lambda (x) (* x x)) ; anonymous function
+(define square (lambda (x) (* x x))) ; name the function
 </pre>
 </p>
 <div id="container" class="foo">
@@ -42,13 +44,10 @@
 <textarea id="input" style="text-align: center;">
 ;; Scheem only evaluates one expression so you need to use begin to combine multiple expressions like the following:
 (begin
-    (define x 5)
-    (define x-squared (* x x))
-    (if (= x-squared 25)
-        (set! x 6)
-        (set! x 7))
-    (set! x-squared (* x x))
-    x-squared) ; should return 36!
+(define fib (lambda (n)
+              (if (&lt; n 2) n
+                  (+ (fib (- n 1)) (fib (- n 2))))))
+ (fib 10))
 </textarea>
 </div>
 
