@@ -15,6 +15,108 @@ if (typeof module !== 'undefined') {
     var expect = chai.expect;
 }
 
+suite('lambda-one', function() {
+    test('anonymous identity', function() {
+        assert.deepEqual(
+            evalScheem([['lambda-one', 'x', 'x'], 5], {}),
+            5
+        );
+    });
+    test('anonymous plus one', function() {
+        assert.deepEqual(
+            evalScheem([['lambda-one', 'x', ['+', 1, 'x']], 5], {}),
+            6
+        );
+    });
+});
+
+suite('lambda', function() {
+    test('anonymous identity', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['x'], 'x'], 5], {}),
+            5
+        );
+    });
+    test('anonymous plus one', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['x'], ['+', 1, 'x']], 5], {}),
+            6
+        );
+    });
+    test('anonymous add', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['x', 'y'], ['+', 'y', 'x']], 5, 2], {}),
+            7
+        );
+    });
+    test('as a parameter', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['func'], ['func', 5]], ['lambda', ['x'], 'x']], {}),
+            5
+        );
+    });
+    test('define and call add', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'add', ['lambda', ['x', 'y'], ['+', 'y', 'x']]], ['add', 1, 2]], {}),
+            3
+        );
+    });
+    test('define and recurse', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'recurse', ['lambda', ['x'], ['if', ['=', 'x', 1], 0, ['recurse', 1]]]], ['recurse', ,2]], {}),
+            0 
+        );
+    });
+});
+
+suite('let-one', function() {
+    test('basic', function() {
+        assert.deepEqual(
+            evalScheem(['let-one', 'x', 2, 'x'], {}),
+            2
+        );
+    });
+    test('redefine', function() {
+        var env = {name: 'x', value: 1};
+        assert.deepEqual(
+            evalScheem(['let-one', 'x', 2, 'x'], env),
+            2
+        );
+    });
+});
+
+suite('function application', function() {
+    test('basic', function() {
+        var plusone = function (args) { return args[0] + 1; };
+        var env = {name: 'plusone', value: plusone};
+        assert.deepEqual(
+            evalScheem(['plusone', 2], env),
+            3
+        );
+    });
+    test('no args', function() {
+        var five = function () { return 5; }
+        var env = {name: 'five', value: five};
+        assert.deepEqual(
+            evalScheem(['five'], env),
+            5
+        );
+    });
+    test('multiple argument', function() {
+        var plus = function (args) { return args[0] + args[1]; };
+        var env = {name: 'plus', value: plus};
+        assert.deepEqual(
+            evalScheem(['plus', 2, 3], env),
+            5
+        );
+    });
+    test('undefined', function() {
+        expect(function () {
+            evalScheem(['notdefined', 2], env)
+        }).to.throw();
+    });
+});
+
 suite('quote', function() {
     test('a number', function() {
         assert.deepEqual(
@@ -104,16 +206,16 @@ suite('cdr', function() {
 });
 suite('environment', function() {
     test('define', function() {
-        var env = {y: 1};
+        var env = {name: 'y', value: 1};
         evalScheem(['define', 'x', 3], env);
         assert.deepEqual(
             env,
-            {x: 3, y: 1}
+            {name: 'x', value: 3, outer: { name: 'y', value: 1, outer: undefined}}
         );
     });
     test('define already defined', function() {
         expect(function () {
-            evalScheem(['define', 'x', 3], {x: 5});
+            evalScheem(['define', 'x', 3], {name: 'x', value: 5});
         }).to.throw();
     });
     test('define too many parameters', function() {
@@ -122,10 +224,10 @@ suite('environment', function() {
         }).to.throw();
     });
     test('set!', function() {
-        var env = {x: 4, y: 1};
+        var env = {name: 'x', value: 4};
         evalScheem(['set!', 'x', 3], env);
         assert.deepEqual(env,
-            {x: 3, y: 1}
+            {name: 'x', value: 3}
         );
     });
     test('set! too many parameters', function() {
@@ -139,10 +241,10 @@ suite('environment', function() {
         }).to.throw();
     });
     test('set! expression', function() {
-        var env = {x: 4, y: 1};
+        var env = {name: 'x', value: 4};
         evalScheem(['set!', 'x', ['+', 1, 2]], env);
         assert.deepEqual(env,
-            {x: 3, y: 1}
+            {name: 'x', value: 3}
         );
     });
 });
@@ -160,15 +262,15 @@ suite('begin', function() {
         );
     });
     test('change environment', function() {
-        var env = {x: 4};
+        var env = {name: 'x', value: 4};
         evalScheem(['begin', ['set!', 'x', 3]], env);
         assert.deepEqual(
             env,
-            {x: 3}
+            {name: 'x', value: 3}
         );
     });
     test('track environment', function() {
-        var env = {x: 4};
+        var env = {name: 'x', value: 4};
         assert.deepEqual(evalScheem(['begin', ['set!', 'x', 3], ['+', 'x', 2]], env),
             5
         );
@@ -178,6 +280,12 @@ suite('math', function() {
     test('add', function() {
         assert.deepEqual(
             evalScheem(['+', 1, 2], {}),
+            3
+        );
+    });
+    test('add variable', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'x', 1], ['+', 'x', 2]], {}),
             3
         );
     });
@@ -306,10 +414,16 @@ suite('parse', function() {
             [1, [2], 32]
         );
     });
-    test('quotes', function() {
+    test('quoted list', function() {
         assert.deepEqual(
-            parseScheem("(a '(b) c)"),
-            ["a", ["quote", ["b"]], "c"]
+            parseScheem("(a '(b d) c)"),
+            ["a", ["quote", ["b", "d"]], "c"]
+        );
+    });
+    test('quoted atom', function() {
+        assert.deepEqual(
+            parseScheem("(a 'b c)"),
+            ["a", ["quote", "b"], "c"]
         );
     });
     test('whitespace', function() {

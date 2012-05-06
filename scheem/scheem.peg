@@ -2,7 +2,7 @@ start =
     expression:expression whitespace* { return expression; }
 
 validchar =
-    [0-9a-zA-Z_?!+=@#$%^&*/.-]
+    [0-9a-zA-Z_?!+=@#$%^&*/.\<\>-]
 
 number =
     digits:[0-9]+
@@ -34,7 +34,7 @@ spacedexpression =
       / whitespace+ quote:quote { return quote; }
 
 quote =
-    "'" list:list { return ["quote", list]; }
+    "'" expression:expression { return ["quote", expression]; }
 
 list =
     whitespace* "(" whitespace* first:expression rest:spacedexpression* whitespace* ")"
