@@ -24,6 +24,11 @@ suite('function application', function() {
             3
         );
     });
+    test('undefined', function() {
+        expect(function () {
+            evalScheem(['notdefined', 2], env)
+        }).to.throw();
+    });
 });
 
 suite('quote', function() {
