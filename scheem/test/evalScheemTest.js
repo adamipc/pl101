@@ -283,6 +283,12 @@ suite('math', function() {
             3
         );
     });
+    test('add variable', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'x', 1], ['+', 'x', 2]], {}),
+            3
+        );
+    });
     test('add single', function() {
         assert.deepEqual(
             evalScheem(['+', 1], {}),

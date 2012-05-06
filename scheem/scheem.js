@@ -18,6 +18,8 @@ var lookup = function (env, v) {
 
     if (typeof env.outer !== 'undefined') {
         return lookup(env.outer, v);
+    } else {
+        return initialEnvironment[v];
     }
 };
 
@@ -28,7 +30,11 @@ var update = function (env, v, val) {
         if (typeof env.outer !== 'undefined') {
             update(env.outer, v, val);
         } else {
-            throw "Variable " + v + " is not defined.";
+            if (typeof initialEnvironment[v] !== 'undefined') {
+                initialEnvironment[v] = val;
+            } else {
+                throw "Variable " + v + " is not defined.";
+            }
         }
     }
 };
@@ -38,6 +44,11 @@ var add_binding = function (env, v, val) {
     env.name = v;
     env.value = val;
 };
+
+var initialEnvironment = {
+'+': function(args) { return args.map(evalScheem).reduce(function(x, y) { return x + y; }, 0); }
+};
+
 
 var evalScheem = function (expr, env) {
     // Numbers evaluate to themselves
@@ -50,12 +61,6 @@ var evalScheem = function (expr, env) {
 
     // Look at head of list for operation
     switch (expr[0]) {
-        case '+':
-            var result = evalScheem(expr[1], env);
-            for (var i = 2; i < expr.length; i++) {
-                result += evalScheem(expr[i], env);
-            }
-            return result;
         case '-':
             var result = evalScheem(expr[1], env);
             for (var i = 2; i < expr.length; i++) {
@@ -158,7 +163,9 @@ var evalScheem = function (expr, env) {
             list.shift();
             return list;
         default:
-            var evaluatedArgs = expr.slice(1).map(evalScheem);
+            var evaluatedArgs = expr.slice(1).map(function(expr) {
+                return evalScheem(expr, env);
+            });
             return (evalScheem(expr[0], env))(evaluatedArgs);
     }
 };
