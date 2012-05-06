@@ -2,7 +2,7 @@ start =
     expression:expression whitespace* { return expression; }
 
 validchar =
-    [0-9a-zA-Z_?!+=@#$%^&*/.-]
+    [0-9a-zA-Z_?!+=@#$%^&*/.\<\>-]
 
 number =
     digits:[0-9]+
