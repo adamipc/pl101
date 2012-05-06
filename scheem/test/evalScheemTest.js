@@ -30,6 +30,27 @@ suite('lambda-one', function() {
     });
 });
 
+suite('lambda', function() {
+    test('anonymous identity', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['x'], 'x'], 5], {}),
+            5
+        );
+    });
+    test('anonymous plus one', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['x'], ['+', 1, 'x']], 5], {}),
+            6
+        );
+    });
+    test('anonymous add', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['x', 'y'], ['+', 'y', 'x']], 5, 2], {}),
+            7
+        );
+    });
+});
+
 suite('let-one', function() {
     test('basic', function() {
         assert.deepEqual(
