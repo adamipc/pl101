@@ -49,6 +49,18 @@ suite('lambda', function() {
             7
         );
     });
+    test('as a parameter', function() {
+        assert.deepEqual(
+            evalScheem([['lambda', ['func'], ['func', 5]], ['lambda', ['x'], 'x']], {}),
+            5
+        );
+    });
+    test('define and call add', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'add', ['lambda', ['x', 'y'], ['+', 'y', 'x']]], ['add', 1, 2]], {}),
+            3
+        );
+    });
 });
 
 suite('let-one', function() {
