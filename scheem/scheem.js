@@ -120,9 +120,17 @@ var evalScheem = function (expr, env) {
             return 0;
         case 'let-one':
             return evalScheem(expr[3], { name: expr[1], value: evalScheem(expr[2]), outer: env});
+        case 'lambda':
+            return function (args) {
+                var newenv = { name: env.name, value: env.value, outer: env.outer };
+                for (var i = 0; i < args.length(); i++) {
+                    add_binding(newenv, expr[1][i], args[i]);
+                }
+                return evalScheem(expr[2], newenv);
+            };
         case 'lambda-one':
-            return function (arg) {
-                return evalScheem(expr[2], { name: expr[1], value: arg, outer: env});
+            return function (args) {
+                return evalScheem(expr[2], { name: expr[1], value: args[0], outer: env});
             };
         case 'if':
             if (evalScheem(expr[1], env) === '#t') {
@@ -150,7 +158,8 @@ var evalScheem = function (expr, env) {
             list.shift();
             return list;
         default:
-            return (evalScheem(expr[0], env))(evalScheem(expr[1]));
+            var evaluatedArgs = expr.slice(1).map(evalScheem);
+            return (evalScheem(expr[0], env))(evaluatedArgs);
     }
 };
 

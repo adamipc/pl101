@@ -48,7 +48,7 @@ suite('let-one', function() {
 
 suite('function application', function() {
     test('basic', function() {
-        var plusone = function (x) { return x + 1; };
+        var plusone = function (args) { return args[0] + 1; };
         var env = {name: 'plusone', value: plusone};
         assert.deepEqual(
             evalScheem(['plusone', 2], env),
@@ -56,7 +56,7 @@ suite('function application', function() {
         );
     });
     test('multiple argument', function() {
-        var plus = function (x, y) { return x + y; };
+        var plus = function (args) { return args[0] + args[1]; };
         var env = {name: 'plus', value: plus};
         assert.deepEqual(
             evalScheem(['plus', 2, 3], env),
