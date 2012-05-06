@@ -61,6 +61,12 @@ suite('lambda', function() {
             3
         );
     });
+    test('define and recurse', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'recurse', ['lambda', ['x'], ['if', ['=', 'x', 1], 0, ['recurse', 1]]]], ['recurse', ,2]], {}),
+            0 
+        );
+    });
 });
 
 suite('let-one', function() {
