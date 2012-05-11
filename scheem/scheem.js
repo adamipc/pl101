@@ -123,7 +123,7 @@ var evalScheem = function (expr, env) {
             return evalScheem(expr[3], { name: expr[1], value: evalScheem(expr[2]), outer: env});
         case 'lambda':
             return function (args) {
-                var newenv = { name: env.name, value: env.value, outer: env.outer };
+                var newenv = { outer: env };
                 for (var i = 0; i < args.length; i++) {
                     add_binding(newenv, expr[1][i], args[i]);
                 }
