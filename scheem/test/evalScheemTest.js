@@ -67,6 +67,18 @@ suite('lambda', function() {
             0 
         );
     });
+    test('inner value', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'foo', ['lambda', ['n'], ['lambda', ['i'], ['begin', ['set!', 'n', ['+', 'n', 'i'], 'n']]]]], ['define', 'bar', ['foo', 7]], ['bar', 5], ['bar', 3]], {}),
+            15 
+        );
+    });
+    test('fibonacci', function() {
+        assert.deepEqual(
+            evalScheem(['begin', ['define', 'fib', ['lambda', ['n'], ['if', ['<', 'n', 2], 'n', ['+', ['fib', ['-', 'n', 1]], ['fib', ['-', 'n', 2]]]]]], ['fib', 10]], {}),
+            55 
+        );
+    });
 });
 
 suite('let-one', function() {
