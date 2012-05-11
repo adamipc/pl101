@@ -97,6 +97,28 @@ suite('let-one', function() {
     });
 });
 
+suite('let', function() {
+    test('basic', function() {
+        assert.deepEqual(
+            evalScheem(['let', [['x', 2]], 'x'], {}),
+            2
+        );
+    });
+    test('two', function() {
+        assert.deepEqual(
+            evalScheem(['let', [['x', 2], ['y', 3]], ['+', 'x', 'y']], {}),
+            5
+        );
+    });
+    test('redefine', function() {
+        var env = {name: 'x', value: 1};
+        assert.deepEqual(
+            evalScheem(['let', [['x', 2]], 'x'], env),
+            2
+        );
+    });
+});
+
 suite('function application', function() {
     test('basic', function() {
         var plusone = function (args) { return args[0] + 1; };
