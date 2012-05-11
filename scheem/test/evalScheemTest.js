@@ -69,7 +69,7 @@ suite('lambda', function() {
     });
     test('inner value', function() {
         assert.deepEqual(
-            evalScheem(['begin', ['define', 'foo', ['lambda', ['n'], ['lambda', ['i'], ['begin', ['set!', 'n', ['+', 'n', 'i'], 'n']]]]], ['define', 'bar', ['foo', 7]], ['bar', 5], ['bar', 3]], {}),
+            evalScheem(['begin', ['define', 'foo', ['lambda', ['n'], ['lambda', ['i'], ['begin', ['set!', 'n', ['+', 'n', 'i']], 'n']]]], ['define', 'bar', ['foo', 7]], ['bar', 5], ['bar', 3]], {}),
             15 
         );
     });
