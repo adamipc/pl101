@@ -121,11 +121,11 @@ var evalStatement = function (stmt, env) {
             break;
         case 'define':
             var new_func = function() {
-                var new_bindings;
+                var new_bindings = {};
                 for (var i = 0; i < stmt.args.length; i++) {
                     new_bindings[stmt.args[i]] = arguments[i];
                 }
-                new_env = { bindings: new_bindings, outer: env };
+                var new_env = { bindings: new_bindings, outer: env };
                 return evalStatements(stmt.body, new_env);
             };
             add_binding(env, stmt.name, new_func);
@@ -146,6 +146,7 @@ var evalStatements = function (seq, env) {
 // If we are used as Node module, export evalTortoise(String)
 if (typeof module !== 'undefined') {
     module.exports.evalStatement = evalStatement;
+    module.exports.evalStatements = evalStatements;
     module.exports.evalExpr = evalExpr;
     module.exports.evalTortoise = evalTortoise;
     module.exports.evalTortoiseString = evalTortoiseString;

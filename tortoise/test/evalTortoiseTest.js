@@ -6,11 +6,37 @@ if (typeof module !== 'undefined') {
     var fs = require('fs');
     var evalStatement = require('../eval').evalStatement;
     var evalExpr = require('../eval').evalExpr;
+    var evalStatements = require('../eval').evalStatements;
 } else {
     // In browser assume already loaded by <script> tags
     var assert = chai.assert;
     var expect = chai.expect;
 }
+
+suite('statements', function() {
+    test('define and call function', function() {
+        var val = 0;
+        var g = function() { val = 1; }
+        var env = { bindings: {g:g}};
+        evalStatements([{tag:'define', name:'f', args:[], body:
+                            [{tag:'ignore', body:
+                                {tag:'call', name:'g', args:[]}}]},
+                        {tag:'ignore', body:{tag:'call', name:'f', args:[]}}], env);
+        assert.deepEqual(
+            val,
+            1
+        );
+    });
+    test('define and assign variable', function() {
+        var env = { bindings: {}};
+        evalStatements([{tag:'var', name:'x'},
+                        {tag:':=', left:'x', right:5}], env);
+        assert.deepEqual(
+            env,
+            { bindings: { x: 5 }}
+        );
+    });
+});
 
 suite('statement', function() {
     test('variable definition', function() {
