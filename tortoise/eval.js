@@ -11,6 +11,10 @@ var evalTortoiseString = function(string, env) {
     return evalTortoise(parseTortoise(string), env);
 };
 
+var evalTortoise = function(stmts, env) {
+    return evalStatements(stmts, env);
+};
+
 var lookup = function (env, v) {
     if (typeof env.bindings[v] !== 'undefined') {
         return env.bindings[v];
@@ -141,6 +145,8 @@ var evalStatements = function (seq, env) {
 };
 // If we are used as Node module, export evalTortoise(String)
 if (typeof module !== 'undefined') {
+    module.exports.evalStatement = evalStatement;
+    module.exports.evalExpr = evalExpr;
     module.exports.evalTortoise = evalTortoise;
     module.exports.evalTortoiseString = evalTortoiseString;
 }
