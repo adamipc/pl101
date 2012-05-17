@@ -20,6 +20,18 @@ suite('statements', function() {
             { tag:':=', left:'foo', right:13}
         );
     });
+    test('variable introduction', function() {
+        assert.deepEqual(
+            parseTortoise("var foo;", "statement"),
+            { tag:'var', name:'foo'}
+        );
+    });
+    test('if', function() {
+        assert.deepEqual(
+            parseTortoise("if (foo) { bar; }", "statement"),
+            { tag:'if', expr:{tag:'ident', name:'foo'}, body:[{tag:'ignore', body:{tag:'ident', name:'bar'}}]}
+        );
+    });
 });
 
 suite('expressions', function() {
