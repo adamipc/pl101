@@ -44,6 +44,14 @@ suite('statement', function() {
             5
         );
     });
+    test('define', function() {
+        var env = { bindings: {} };
+        evalStatement({tag:'define', name:'f', args:[], body:[]}, env);
+        assert.deepEqual(
+            typeof env.bindings.f,
+            'function'
+        );
+    });
     test('if false', function() {
         assert.deepEqual(
             typeof evalStatement({tag:'if', expr:{tag:'==', left:5, right:4}, body:[{tag:'ignore', body:15}]}, {}),
