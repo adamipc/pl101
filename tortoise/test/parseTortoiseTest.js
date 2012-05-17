@@ -38,6 +38,24 @@ suite('expressions', function() {
             { tag:'+', left:{tag:'*', left:1, right:-2}, right:0.4}
         );
     });
+    test('parentheses', function() {
+        assert.deepEqual(
+            parseTortoise("1 * (-2 + 0.4)", "expression"),
+            { tag:'*', left:1, right:{tag:'+', left:-2, right:0.4}}
+        );
+    });
+    test('function without parameters', function() {
+        assert.deepEqual(
+            parseTortoise("_foo13()", "expression"),
+            { tag:'call', name:'_foo13', args:[]}
+        );
+    });
+    test('function with parameters', function() {
+        assert.deepEqual(
+            parseTortoise("_foo13(bar)", "expression"),
+            { tag:'call', name:'_foo13', args:[{tag:'ident', name:'bar'}]}
+        );
+    });
 });
 
 suite('numbers', function() {
