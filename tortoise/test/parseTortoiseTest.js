@@ -32,6 +32,29 @@ suite('statements', function() {
             { tag:'if', expr:{tag:'ident', name:'foo'}, body:[{tag:'ignore', body:{tag:'ident', name:'bar'}}]}
         );
     });
+    test('repeat', function() {
+        assert.deepEqual(
+            parseTortoise("repeat (10) { bar; }", "statement"),
+            { tag:'repeat', expr:10, body:[{tag:'ignore', body:{tag:'ident', name:'bar'}}]}
+        );
+    });
+    test('define without parameters', function() {
+        assert.deepEqual(
+            parseTortoise("define foo() { bar; }", "statement"),
+            { tag:'define', name:'foo', args:[], body:[{tag:'ignore', body:{tag:'ident', name:'bar'}}]}
+        );
+    });
+    test('define with multiple parameters', function() {
+        assert.deepEqual(
+            parseTortoise("define foo(a,b) { bar; }", "statement"),
+            { tag:'define', name:'foo', args:['a','b'], body:[{tag:'ignore', body:{tag:'ident', name:'bar'}}]}
+        );
+    });
+    test('define with parameter that isn\'t identifier', function() {
+        expect(function() {
+            parseTortoise("define foo(1) { bar; }", "statement");
+        }).to.throw();
+    });
 });
 
 suite('expressions', function() {
