@@ -33,6 +33,17 @@ suite('statement', function() {
             15
         );
     });
+    test('repeat', function() {
+        var called = 0;
+        var env = { bindings: { f: function() {
+            called++;
+        }}};
+        evalStatement({tag:'repeat', expr:5, body:[{tag:'ignore', body:{tag:'call', name:'f', args:[]}}]}, env);
+        assert.deepEqual(
+            called,
+            5
+        );
+    });
     test('if false', function() {
         assert.deepEqual(
             typeof evalStatement({tag:'if', expr:{tag:'==', left:5, right:4}, body:[{tag:'ignore', body:15}]}, {}),
