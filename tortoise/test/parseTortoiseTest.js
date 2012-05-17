@@ -13,6 +13,33 @@ if (typeof module !== 'undefined') {
     var expect = chai.expect;
 }
 
+suite('expressions', function() {
+    test('add two numbers', function() {
+        assert.deepEqual(
+            parseTortoise("12.03 + -13", "expression"),
+            { tag:'+', left:12.03, right:-13}
+        );
+    });
+    test('subtract two identifiers', function() {
+        assert.deepEqual(
+            parseTortoise("_foo13 - bar_baz", "expression"),
+            { tag:'-', left:{tag:'ident', name:'_foo13'}, right:{tag:'ident', name:'bar_baz'}}
+        );
+    });
+    test('multiply and divide', function() {
+        assert.deepEqual(
+            parseTortoise("1 * -2 / 0.4", "expression"),
+            { tag:'*', left:1, right:{tag:'/', left:-2, right:0.4}}
+        );
+    });
+    test('precidence', function() {
+        assert.deepEqual(
+            parseTortoise("1 * -2 + 0.4", "expression"),
+            { tag:'+', left:{tag:'*', left:1, right:-2}, right:0.4}
+        );
+    });
+});
+
 suite('numbers', function() {
     test('without whole', function() {
         expect(function () {
