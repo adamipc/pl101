@@ -1,0 +1,190 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tortoise Live Demo</title>
+  <script src=
+    "http://nathansuniversity.com/js/jquery-1.7.1.min.js">
+  </script>
+  <script src="jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js"></script>
+  <script src="CodeMirror-2.24/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="CodeMirror-2.24/lib/codemirror.css">
+  <link rel="stylesheet" href="jquery-ui-1.8.19.custom/css/smoothness/jquery-ui-1.8.19.custom.css">
+  <script src="CodeMirror-2.24/mode/javascript/javascript.js"></script>
+  <script src="../node_modules/raphael/raphael-min.js"></script>
+  <script src="../parse.js"></script>
+  <script src="../eval.js"></script>
+</head>
+<body>
+<style type="text/css">
+.CodeMirror,.CodeMirror-scroll {
+    height: 200px;
+}
+.CodeMirror {
+    border: solid 1px;
+}
+.foo {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+<p class="foo">Here is my Tortoise interpeter.
+<pre class="foo">
+</pre>
+</p>
+<div id="container" class="foo">
+<h3 class="ui-widget-header">Write some code!</h3>
+<textarea id="input" style="text-align: center;">
+define curve(size, angle, scale, count) {
+ if (count > 0) {
+  forward(size);
+  left(angle);
+  curve(size * scale, angle, scale, count - 1);
+ 
+  right(90);
+  curve(size * scale * scale, angle, scale, count - 1);
+  left(90);
+ 
+  right(angle);
+  right(180);
+  forward(size);
+  left(180);
+ 
+ }
+}
+ 
+right(180);
+forward(100);
+right(180);
+curve(100, 29, 0.80, 10);
+</textarea>
+</div>
+
+<div class="foo">
+<input id="submitbutton" type="button" value="Run" />
+</div>
+
+<div class="foo" id="turtlecanvas" style="width:700px; height:600px; background-color:#eee;"></div>
+
+<div id="console" class="console foo" style="border:solid 1px;">
+<p>This is where output goes.</p>
+</div>
+
+
+<script>
+var Turtle = function (id) {
+    var $elem = $('#' + id);
+    this.paper = Raphael(id);
+    this.originx = $elem.width() / 2;
+    this.originy = $elem.height() / 2;
+    this.clear();
+};
+
+Turtle.prototype.clear = function () {
+    this.paper.clear();
+    this.x = this.originx;
+    this.y = this.originy;
+    this.angle = 90;
+    this.pen = true;
+    this.turtleimg = undefined;
+    this.updateTurtle();
+};
+
+Turtle.prototype.updateTurtle = function () {
+    if(this.turtleimg === undefined) {
+        this.turtleimg = this.paper.image(
+            "http://nathansuniversity.com/gfx/turtle2.png",
+            0, 0, 64, 64);
+    }
+    this.turtleimg.attr({
+        x: this.x - 32,
+        y: this.y - 32,
+        transform: "r" + (-this.angle)});
+    this.turtleimg.toFront();
+};
+
+Turtle.prototype.drawTo = function (x, y) {
+    var x1 = this.x;
+    var y1 = this.y;
+    var params = {
+        "stroke-width": 4
+    };
+    var path = this.paper.path(Raphael.format("M{0},{1}L{2},{3}",
+        x1, y1, x, y)).attr(params);
+};
+Turtle.prototype.forward = function (d) {
+    var newx = this.x + Math.cos(Raphael.rad(this.angle)) * d;
+    var newy = this.y - Math.sin(Raphael.rad(this.angle)) * d;
+    if(this.pen) {
+        this.drawTo(newx, newy);
+    }
+    this.x = newx;
+    this.y = newy;
+    this.updateTurtle();
+};
+Turtle.prototype.right = function (ang) {
+    this.angle -= ang;
+    this.updateTurtle();
+};
+Turtle.prototype.left = function (ang) {
+    this.angle += ang;
+    this.updateTurtle();
+};
+  // Utility function to log messages
+  var log_console = function(msg) {
+      $('#console').append('<p>' + msg + '</p>');
+  };
+  // After page load
+  $(function() {
+    var myTurtle = new Turtle("turtlecanvas");
+    var env = { bindings:{}};
+    add_binding(env, 'forward', function(d) { myTurtle.forward(d); });
+    add_binding(env, 'right', function(a) { myTurtle.right(a); });
+    add_binding(env, 'left', function(a) { myTurtle.left(a); });
+    var cmOptions = {
+        indentUnit: 4,
+        smartIndent: true,
+        tabSize: 4,
+        indentWithTabs: false,
+        lineNumbers: true,
+        matchBrackets: true,
+        autofocus: true,
+        extraKeys: {
+            "Tab": "indentAuto",
+            "Ctrl-Enter": function() { $('#submitbutton').click(); },
+        }
+    };
+    var myCodeMirror = CodeMirror.fromTextArea(input, cmOptions);
+    $('#submitbutton').click(function() {
+        var user_text = myCodeMirror.getValue();
+        $('#console').html(''); // clear console
+        log_console('Your input was: "' + user_text + '"');
+        myTurtle.clear();
+        try {
+            var parsed = TORTOISE.parse(user_text);
+            log_console('Parsed: ' + JSON.stringify(parsed));
+            try {
+                var result = evalTortoise(parsed, env);
+                log_console('Result: ' + JSON.stringify(result));
+            }
+            catch(e) {
+                log_console('Eval Error: ' + e);
+            }
+        }
+        catch(e) {
+            log_console('Parse Error: ' + e);
+        }
+    });
+    $(".CodeMirror").resizable({
+      stop: function() { myCodeMirror.refresh(); },
+      resize: function() {
+        $(".CodeMirror-scroll").height($(this).height());
+        $(".CodeMirror-scroll").width($(this).width());
+        myCodeMirror.refresh();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
