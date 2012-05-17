@@ -13,6 +13,15 @@ if (typeof module !== 'undefined') {
     var expect = chai.expect;
 }
 
+suite('statements', function() {
+    test('assignment', function() {
+        assert.deepEqual(
+            parseTortoise("foo := 13;", "statement"),
+            { tag:':=', left:'foo', right:13}
+        );
+    });
+});
+
 suite('expressions', function() {
     test('add two numbers', function() {
         assert.deepEqual(
