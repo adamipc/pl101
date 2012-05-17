@@ -56,6 +56,12 @@ suite('expressions', function() {
             { tag:'call', name:'_foo13', args:[{tag:'ident', name:'bar'}]}
         );
     });
+    test('function with multiple parameters', function() {
+        assert.deepEqual(
+            parseTortoise("_foo13(bar,-13.4)", "expression"),
+            { tag:'call', name:'_foo13', args:[{tag:'ident', name:'bar'},-13.4]}
+        );
+    });
 });
 
 suite('numbers', function() {
