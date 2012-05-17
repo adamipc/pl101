@@ -50,3 +50,28 @@ suite('numbers', function() {
     });
 });
 
+suite('identifiers', function() {
+    test('first char digit', function() {
+        expect(function () {
+            parseTortoise("7foo", "identifier")
+        }).to.throw();
+    });
+    test('invalid char', function() {
+        expect(function () {
+            parseTortoise("foo-bar", "identifier")
+        }).to.throw();
+    });
+    test('letters numbers underscore', function() {
+        assert.deepEqual(
+            parseTortoise("foo93_bar", "identifier"),
+            "foo93_bar"
+        );
+    });
+    test('beginning underscore', function() {
+        assert.deepEqual(
+            parseTortoise("_foo13bar", "identifier"),
+            "_foo13bar"
+        );
+    });
+});
+
