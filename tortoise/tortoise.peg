@@ -65,7 +65,7 @@ comma_expression = "," ws expr:expression
 
 arglist
     = first:expression rest:comma_expression*
-        { return [first].contact(rest); }
+        { return [first].concat(rest); }
 
 statement
     = v:identifier ws ":=" ws expr:expression ws ";" ws

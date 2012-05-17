@@ -895,7 +895,7 @@ TORTOISE = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, first, rest) { return [first].contact(rest); })(pos0, result0[0], result0[1]);
+          result0 = (function(offset, first, rest) { return [first].concat(rest); })(pos0, result0[0], result0[1]);
         }
         if (result0 === null) {
           pos = pos0;
