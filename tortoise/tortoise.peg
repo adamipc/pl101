@@ -12,13 +12,14 @@ number
             return parseFloat(chars.join('') + frac) * sign;
         }
 
-validcharfirst
+validfirstchar
     = [a-zA-Z_]
+
 validchar
     = [0-9a-zA-Z_]
 
 identifier
-    = firstchar:validfirstchar chars:validchars*
+    = firstchar:validfirstchar chars:validchar*
         { return firstchar + chars.join(''); }
 
 ws = [ \t\n]*
@@ -31,7 +32,7 @@ comp_op = "<=" / ">=" / "!=" / "==" "<" / ">"
 
 comparative
     = left:additive ws op:comp_op ws right:comparative
-        { right {tag:op, left:left, right:right}; }
+        { return {tag:op, left:left, right:right}; }
     / additive
 
 additive_op = "+" / "-"
@@ -86,7 +87,7 @@ statement
         "{" ws body:statements ws "}" ws
         { return { tag:"define",
                    name:v, args:args, body:body }; }
-    / expr:expresssion ws ";" ws
+    / expr:expression ws ";" ws
         { return { tag:"ignore", body:expr }; }
 
 comma_identifier = "," ws v:identifier
