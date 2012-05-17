@@ -14,6 +14,16 @@ if (typeof module !== 'undefined') {
 }
 
 suite('numbers', function() {
+    test('without whole', function() {
+        expect(function () {
+            parseTortoise(".03", "number")
+        }).to.throw();
+    });
+    test('negative without whole', function() {
+        expect(function () {
+            parseTortoise("-.03", "number")
+        }).to.throw();
+    });
     test('float', function() {
         assert.deepEqual(
             parseTortoise("12.03", "number"),
