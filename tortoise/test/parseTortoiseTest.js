@@ -14,6 +14,24 @@ if (typeof module !== 'undefined') {
 }
 
 suite('numbers', function() {
+    test('float', function() {
+        assert.deepEqual(
+            parseTortoise("12.03", "number"),
+            12.03
+        );
+    });
+    test('negative float', function() {
+        assert.deepEqual(
+            parseTortoise("-12.03", "number"),
+            -12.03
+        );
+    });
+    test('negative integer', function() {
+        assert.deepEqual(
+            parseTortoise("-12", "number"),
+            -12
+        );
+    });
     test('integer', function() {
         assert.deepEqual(
             parseTortoise("12", "number"),
