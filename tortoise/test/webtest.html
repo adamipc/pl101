@@ -1,0 +1,31 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link rel="stylesheet"
+    href="http://nathansuniversity.com/css/mocha.css" />
+  <script src=
+    "http://nathansuniversity.com/js/jquery-1.7.1.min.js">
+  </script>
+  <script src=
+    "http://nathansuniversity.com/js/chai.js">
+  </script>
+  <script src="http://nathansuniversity.com/js/mocha.js">
+  </script>
+  <script src="http://cloud.github.com/downloads/dmajda/pegjs/peg-0.7.0.min.js">
+  </script>
+  <script>mocha.setup('tdd')</script>
+  <script src="../parse.js"></script>
+  <script src="../eval.js"></script>
+  <script src="evalTortoiseTest.js"></script>
+  <script src="parseTortoiseTest.js"></script>
+  <script>
+    $(function(){
+      mocha.run();
+    });
+  </script>
+</head>
+<body>
+  <div id="mocha"></div>
+</body>
+</html>
