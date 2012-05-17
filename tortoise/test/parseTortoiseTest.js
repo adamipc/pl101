@@ -50,6 +50,12 @@ suite('statements', function() {
             { tag:'define', name:'foo', args:['a','b'], body:[{tag:'ignore', body:{tag:'ident', name:'bar'}}]}
         );
     });
+    test('multiple statements', function() {
+        assert.deepEqual(
+            parseTortoise("foo; bar;", "statements"),
+            [{ tag:'ignore', body:{tag:'ident', name:'foo'}},{tag:'ignore', body:{tag:'ident', name:'bar'}}]
+        );
+    });
     test('define with parameter that isn\'t identifier', function() {
         expect(function() {
             parseTortoise("define foo(1) { bar; }", "statement");
